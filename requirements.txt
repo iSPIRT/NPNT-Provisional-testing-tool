@@ -1,0 +1,4 @@
+pycryptodomex==3.7.2
+PyQt5==5.11.3
+lxml==4.2.1
+signxml==2.6.0
