@@ -7,15 +7,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWidgets import QMessageBox
 
-from helpers import verify_flight_log_authenticity
+from helpers import verify_flight_log_signature_objs
 from permissions import generate_all_test_permission_artefacts, \
     generate_valid_permission
-
-"""
-TODO:
-    1)Add Reset button
-    2)other features as requested by community.
-"""
 
 
 class AppWindow(QDialog):
@@ -54,7 +48,6 @@ class AppWindow(QDialog):
         self.verify_results_buttonwidget.hide()
 
     def create_drone_id_widget(self):
-
         self.drone_id_entry = QLineEdit(self)
         drone_id = QLabel()
         drone_id.setText("Input Drone ID: ")
@@ -294,8 +287,8 @@ class AppWindow(QDialog):
 
         try:
             log = open(self.log_file, "rb").read()
-            self.flight_log_sign_verified = verify_flight_log_authenticity(log,
-                                                                           self.drone_public_key)
+            self.flight_log_sign_verified = verify_flight_log_signature_objs(log,
+                                                                             self.drone_public_key)
         except Exception as e:
             self.show_warning(
                 "Incorrect file format. Signature verification failed/n"
