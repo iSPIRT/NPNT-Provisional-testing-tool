@@ -24,8 +24,8 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
     :param str purpose: Flight purpose text
     :param str payloadWeight: payload wt in agreed upon units.
     :param str payloadDetails: details of payload
-    :param str startTime: start time for the permission request
-    :param endTime: END time for the permission request
+    :param datetime.datetime startTime: start time for the permission request
+    :param datetime.datetime endTime: END time for the permission request
     :param List coords: List of coords in Long, Lat
     :param drone_pub_key_obj: The public key file object of the RPAS for PIN
     :param secret_pin: the secret PIN for the PA. defaults unless specified.
@@ -82,7 +82,7 @@ def create_pin_hash(pub_key_obj, secret_pin=b'1234'):
     return str(ciphertext)[2:-1]
 
 
-def sign_permission_artefact(xml_root, private_key = "dgca_private.pem"):
+def sign_permission_artefact(xml_root, private_key="Resources/dgca_private.pem", certificate="Resources/dgca.cert" ):
     """
     Sign the permission artefact xml with the private key stored .
     Optionally pass a different key path to sign with a different key
@@ -92,7 +92,7 @@ def sign_permission_artefact(xml_root, private_key = "dgca_private.pem"):
     """
     root = xml_root.getroot()
 
-    cert = open("dgca.cert").read()
+    cert = open(certificate).read()
     key = open(private_key,"rb").read()
     signed_root = sx.XMLSigner()
     ns = {}
