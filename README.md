@@ -38,10 +38,19 @@ Run the app
 
 `python npnt_testing_app.py`
 
-### Sample Cases - 
-#### Sign a Flight log using a public key
+### Examples - 
+#### Verify a pass case
+sign the `unsigned_Flight_Log.json` in the `tests` directory using the sample
+keypair provided. In this case - `sample_key_private.pem`
+
 ```python
 from helpers import sign_log
-sign_log(unisgned_log_file_path, sample)
+sign_log("tests/unsigned_Flight_Log.json" , "tests/sample_key_private.pem")
 ``` 
 
+This will generate a signed log in the same directory. You can verify the signature using 
+```python
+from helpers import verify_flight_log_signature
+result = verify_flight_log_signature("tests/unsigned_Flight_Log-signed.json", "tests/sample_key_public.pem")
+```
+simple as that!
