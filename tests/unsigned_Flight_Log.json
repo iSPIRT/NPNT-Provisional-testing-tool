@@ -1,0 +1,26 @@
+{
+  "PermissionArtefact": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+  "FlightLog": [
+    {
+      "TimeStamp": 41,
+      "Longitude": 380.0,
+      "Latitude": 443.5,
+      "Altitude": 704,
+      "CRC": 719
+    },
+    {
+      "TimeStamp": 505,
+      "Longitude": 11.0,
+      "Latitude": 701.0,
+      "Altitude": 7,
+      "CRC": 637
+    },
+    {
+      "TimeStamp": 81,
+      "Longitude": 116.5,
+      "Latitude": 996.0,
+      "Altitude": 560,
+      "CRC": 147
+    }
+  ]
+}
