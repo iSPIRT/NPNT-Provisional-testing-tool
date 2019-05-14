@@ -1,0 +1,17 @@
+<UAPermission lastUpdated="" permissionArtifactId="" pilotPinHash="Pvwu0RRLObqFBKeYai1LJU4pF8QyxVP1sgrWyLCOr6nYlSksDmWp9BfuV2yd/QBXyhVlpp83H1JLYHHZSVqf6FFxhfeMYNnNauxCBhHTOrdbjOCtWXikptWUMGaPyzPOnM1BXiDHMz+i+ge2P89M+euxQuS89vctyXNn744dLgN0bLmpRcmFWq/oqcDl89rNTNd816Gp3m334k/0VvL2lz4JvPUsS1mH8x9ep/3ZTIMLv2pny5izta0vH8zGHJEdzCftrH/PXc1lKF9KObMDqdj8J19TtBuYqOc7rHBEBH4WVLQg7g2Lg643cdf6mjB1E2rs0NEU7xVS7zzmDqjTYA==" ttl="" txnId=""><Permission><Owner operatorId=""><Pilot uaplNo="" validTo=""/></Owner><FlightDetails><UADetails uinNo="12312"/><FlightPurpose frequency="" shortDesc="Provisional test"/><PayloadDetails payloadDetails="Not specified" payloadWeight="Not specified"/><FlightParameters flightEndTime="2019-05-14T14:16:11.380512" flightStartTime="2019-05-14T13:16:11.380512" frequenciesUsed=""><Coordinates><Coordinate latitude="12.934158" longitude="77.609316"/><Coordinate latitude="12.934796" longitude="77.609852"/><Coordinate latitude="12.934183" longitude="77.610646"/><Coordinate latitude="12.933551" longitude="77.6101"/><Coordinate latitude="12.934158" longitude="77.609316"/></Coordinates></FlightParameters></FlightDetails></Permission><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2006/12/xml-c14n11"/><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/2006/12/xml-c14n11"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>OfIYZPOztbxLNY/LGattrlZ64frUxASjx6ODi8Svmpc=</DigestValue></Reference></SignedInfo><SignatureValue>oPF5tHj0JLk7W5vT2BRePDdGvX/MqFWAn55HkCG9nmXeoW47JccsQujwd8QpO4n6KzS0LmoxQV2rLoBaj5O/K9WCdCl5jobcqXibToTth7TDZxvdsjxeLkk/ysSYRlLRdLZDYEXl87AMXB3YO0pK0cypkNfesOPZEIFgQy8LEulLk139JHZl7vydDK75CNAQprlehHBRxcDUBrSPbetM4m/TjDE6Ez2fJcjcUvY5s+uYtzNJpy+UuExYBiqaKaa5X0j7TdFuIy6n4PfZKJZFpi11Z30T+OJyf2qf7rZq24777Kh5hDO1caZdtgkkoYneNZDFhkmb4RppJGWOtU5c9g==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC8TCCAdmgAwIBAgIJAJRDnqfLydHvMA0GCSqGSIb3DQEBCwUAMA8xDTALBgNV
+BAMMBHRlc3QwHhcNMTkwMzI2MDcxMTQzWhcNMjkwMzIzMDcxMTQzWjAPMQ0wCwYD
+VQQDDAR0ZXN0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq51cjR/m
+cgd0nWO33O3SM84yu3DRdaG8OMYSqzPixY5R+D8niOTVLZvOtaFROSneP1JmUAca
+Bn5sFhsFxgpJX8O6ee0m9PqLL+LKjexEs5dZ85IG8GqF+UJABaKfBeTPOgI5NAwo
+yZPBphzxsra1fH2OV2roaCf4ErMnYluuyey/VfFlHTVgC5+VX2wvO+o6pYUuzdNq
+CvgYwZrMEDCXm+08iZk/qpLgqgUCQTs8qGu/Y0d/EqwGmv9xN8tyxX+IbaeQM7uz
+tN8PbMf8wY40OqdgNmgaVmMR4mfAO2XJiryR5Y8JACDGf3dhmcDrdtfmNjaHR109
+o2/wUPhSdWB/3QIDAQABo1AwTjAdBgNVHQ4EFgQUR4p2KJJXG5cZ8STI66RG6l2o
+7yowHwYDVR0jBBgwFoAUR4p2KJJXG5cZ8STI66RG6l2o7yowDAYDVR0TBAUwAwEB
+/zANBgkqhkiG9w0BAQsFAAOCAQEAV3uurlHMtyopefBpdGj59eLWCrpRYJLKbDtL
+FCj+tY1/uiwogUMNsEEHEBeEdwM+PIPuzWZ4tSYQ+SvdCCt4/6e9x+c2/1mZKhnR
+zL/s9o70RyWZXQO+Dz43B5aIIy/qARUhLxU2NVL42q90pInIh/ltT02IVkcibwDn
+sM4XJhsSyvQlRyYXdPzDeBjEOVYFpafLbC/7a5FBuNwfNKEMWhOj6AELnC8fWb3m
+aNevhjSH5amGU2XrUp6yIdWUL2HuW7ReSer93Lg6iYujd/aaqk+pWE5bQsC+r2kH
+pNcpntHJLsd9E1cwzWCJiEM9zK4GXqKV/QDUdPC6FYfEf+ti9A==
+</X509Certificate></X509Data></KeyInfo></Signature></UAPermission>

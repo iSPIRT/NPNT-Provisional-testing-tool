@@ -1,12 +1,18 @@
 import base64
 import json
+import os
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 
+import cryptography
 import signxml as sx
 from Cryptodome.Cipher import PKCS1_v1_5
 from Cryptodome.Hash import SHA256
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Signature import pkcs1_15
+from lxml import etree
+MOCK_DGCA_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca_private.pem")
+MOCK_DGCA_CERTIFICATE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca.cert")
+
 
 
 def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
@@ -24,8 +30,8 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
     :param str purpose: Flight purpose text
     :param str payloadWeight: payload wt in agreed upon units.
     :param str payloadDetails: details of payload
-    :param str startTime: start time for the permission request
-    :param endTime: END time for the permission request
+    :param datetime.datetime startTime: start time for the permission request
+    :param datetime.datetime endTime: END time for the permission request
     :param List coords: List of coords in Long, Lat
     :param drone_pub_key_obj: The public key file object of the RPAS for PIN
     :param secret_pin: the secret PIN for the PA. defaults unless specified.
@@ -82,7 +88,7 @@ def create_pin_hash(pub_key_obj, secret_pin=b'1234'):
     return str(ciphertext)[2:-1]
 
 
-def sign_permission_artefact(xml_root, private_key = "dgca_private.pem"):
+def sign_permission_artefact(xml_root, private_key=MOCK_DGCA_PRIVATE_KEY, certificate=MOCK_DGCA_CERTIFICATE):
     """
     Sign the permission artefact xml with the private key stored .
     Optionally pass a different key path to sign with a different key
@@ -92,8 +98,9 @@ def sign_permission_artefact(xml_root, private_key = "dgca_private.pem"):
     """
     root = xml_root.getroot()
 
-    cert = open("dgca.cert").read()
-    key = open(private_key,"rb").read()
+    with open(private_key, 'rb') as f, open(certificate) as c:
+        key = f.read()
+        cert = c.read()
     signed_root = sx.XMLSigner()
     ns = {}
     ns[None] = signed_root.namespaces['ds']
@@ -102,7 +109,31 @@ def sign_permission_artefact(xml_root, private_key = "dgca_private.pem"):
     return signed_root
 
 
-def verify_flight_log_authenticity(log_object, public_key_obj):
+def verify_xml_signature(xml_file, certificate_path):
+    """
+    Verify the signature of a given xml file against a certificate
+    :param path xml_file: path to the xml file for verification
+    :param certificate_path: path to the certificate to be used for verification
+    :return: bool: the success of verification
+    """
+    # TODO -  refactor such that this verifies for generic stuff
+    tree = etree.parse(xml_file)
+    root = tree.getroot()
+    with open(certificate_path) as f:
+        certificate = f.read()
+        # for per_tag in root.iter('UAPermission'):
+        #     data_to_sign = per_tag
+        try:
+            verified_data = sx.XMLVerifier().verify(data=root, require_x509=True, x509_cert=certificate).signed_xml
+            # The file signature is authentic
+            return True
+        except cryptography.exceptions.InvalidSignature:
+            # print(verified_data)
+            # add the type of exception
+            return False
+
+
+def verify_flight_log_signature_objs(log_object, public_key_obj):
     """
     Verify the signature of the Flight log_object against a public key.
     :param log_object: The flight log file object for verification
@@ -123,27 +154,57 @@ def verify_flight_log_authenticity(log_object, public_key_obj):
         return False
 
 
-def sign_log(log_path, private_key_path):
+def verify_flight_log_signature(flight_log, public_key):
+    """
+    wrapper for flight log verification using paths instead of in memory objects
+    :param path flight_log: path JSON encoded NPNT compliant flight log
+    :param path public_key: path to RSA 2048 public key pem file
+    :return: bool: True or False on success of verification
+    """
+    with open(flight_log) as a, open(public_key) as b:
+        return verify_flight_log_signature_objs(a.read(), b.read())
+
+
+def sign_log(log_path, private_key_path, out_path=None):
     """
     sample function to demonstrate how to sign a flight log.
     This complements the verify_flight_log_signature methood
     :param log_path: path to log file to be signed
     :param private_key_path: path to the private key to be used for signing.
-    :return: sign the flight log and save it with 'signed' added to it's name
+    :param out_path: path to save the signed log file -
+            defaults to '-signed' added to it's name if no path is specified
+    :return: None
     """
-    log_obj = open(log_path, "rb").read()
-    jd = json.loads(log_obj)
-    key_ob = open(private_key_path).read()
-    rsa_key = RSA.import_key(key_ob)
-
-    hashed_logdata = SHA256.new(bytes(str((jd['FlightLog'])).encode()))
-    log_signature = pkcs1_15.new(rsa_key).sign(hashed_logdata)
-
-    # the signature is encoded in base64 for transport
-    enc = base64.b64encode(log_signature)
-    # dealing with python's byte string expression
-    jd['Signature'] = str(enc)[2:-1]
-    save_path = log_path[:-5] + "signed.json"
+    with open(log_path, "rb") as log_obj, open(private_key_path) as key_ob:
+        jd = json.loads(log_obj.read())
+        rsa_key = RSA.import_key(key_ob.read())
+        hashed_logdata = SHA256.new(bytes(str((jd['FlightLog'])).encode()))
+        log_signature = pkcs1_15.new(rsa_key).sign(hashed_logdata)
+        # the signature is encoded in base64 for transport
+        enc = base64.b64encode(log_signature)
+        # dealing with python's byte string expression
+        jd['Signature'] = str(enc)[2:-1]
+    if out_path:
+        save_path = out_path
+    else:
+        save_path = log_path[:-5] + "-signed.json"
     with open(save_path, 'w') as outfile:
-       json.dump(jd, outfile, indent =4)
+        json.dump(jd, outfile, indent=4)
+    return save_path
 
+
+def create_keys(folder, keyname):
+    """
+    create a RSA 2048 keypair
+    :param folder: path to save the keypair
+    :param str keyname: name of the key pair to save as keyname_private.pem,and keyname_public.pem
+    :return:
+    """
+    key = RSA.generate(2048)
+    private_key = key.export_key()
+    with open(os.path.join(folder, keyname + "_private.pem"), "wb") as file_out:
+        file_out.write(private_key)
+
+    public_key = key.publickey().export_key()
+    with open(os.path.join(folder, keyname + "_public.pem"), "wb") as file_out:
+        file_out.write(public_key)
