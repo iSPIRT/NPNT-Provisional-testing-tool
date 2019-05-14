@@ -3,11 +3,16 @@ import json
 import os
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 
+import cryptography
 import signxml as sx
 from Cryptodome.Cipher import PKCS1_v1_5
 from Cryptodome.Hash import SHA256
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Signature import pkcs1_15
+from lxml import etree
+MOCK_DGCA_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca_private.pem")
+MOCK_DGCA_CERTIFICATE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca.cert")
+
 
 
 def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
@@ -83,7 +88,7 @@ def create_pin_hash(pub_key_obj, secret_pin=b'1234'):
     return str(ciphertext)[2:-1]
 
 
-def sign_permission_artefact(xml_root, private_key="Resources/dgca_private.pem", certificate="Resources/dgca.cert" ):
+def sign_permission_artefact(xml_root, private_key=MOCK_DGCA_PRIVATE_KEY, certificate=MOCK_DGCA_CERTIFICATE):
     """
     Sign the permission artefact xml with the private key stored .
     Optionally pass a different key path to sign with a different key
@@ -93,14 +98,39 @@ def sign_permission_artefact(xml_root, private_key="Resources/dgca_private.pem",
     """
     root = xml_root.getroot()
 
-    cert = open(certificate).read()
-    key = open(private_key,"rb").read()
+    with open(private_key, 'rb') as f, open(certificate) as c:
+        key = f.read()
+        cert = c.read()
     signed_root = sx.XMLSigner()
     ns = {}
     ns[None] = signed_root.namespaces['ds']
     signed_root.namespaces = ns
     signed_root = signed_root.sign(root, key=key, cert=cert)
     return signed_root
+
+
+def verify_xml_signature(xml_file, certificate_path):
+    """
+    Verify the signature of a given xml file against a certificate
+    :param path xml_file: path to the xml file for verification
+    :param certificate_path: path to the certificate to be used for verification
+    :return: bool: the success of verification
+    """
+    # TODO -  refactor such that this verifies for generic stuff
+    tree = etree.parse(xml_file)
+    root = tree.getroot()
+    with open(certificate_path) as f:
+        certificate = f.read()
+        # for per_tag in root.iter('UAPermission'):
+        #     data_to_sign = per_tag
+        try:
+            verified_data = sx.XMLVerifier().verify(data=root, require_x509=True, x509_cert=certificate).signed_xml
+            # The file signature is authentic
+            return True
+        except cryptography.exceptions.InvalidSignature:
+            # print(verified_data)
+            # add the type of exception
+            return False
 
 
 def verify_flight_log_signature_objs(log_object, public_key_obj):

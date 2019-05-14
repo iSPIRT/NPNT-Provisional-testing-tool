@@ -2,6 +2,8 @@ import unittest
 import os
 from helpers import *
 
+from permissions import generate_bad_sign_artefact
+
 
 class TestFlightLog(unittest.TestCase):
 
@@ -12,15 +14,40 @@ class TestFlightLog(unittest.TestCase):
         cls.signed_flight_log = os.path.join(cls.base_path, "unsigned_Flight_Log-signed.json")
         cls.sample_public_key = os.path.join(cls.base_path, "sample_key_public.pem")
         cls.sample_private_key = os.path.join(cls.base_path, "sample_key_private.pem")
+        cls.signed_valid_pa = os.path.join(cls.base_path, "signed_pa_valid.xml")
+        cls.mock_dgca_cert = os.path.join(os.path.dirname(cls.base_path), "Resources" , "dgca.cert")
+        cls.bad_artefact_file = os.path.join(cls.base_path, "bad_pa.xml")
 
     def test_flight_log_signature(self):
         sign_log(self.unsigned_flight_log, self.sample_private_key)
         self.assertTrue(verify_flight_log_signature(self.signed_flight_log, self.sample_public_key ))
+
+    def test_permission_signature(self):
+        # Test that a valid Permssion artefact is signed with the correct key.
+        self.assertTrue(verify_xml_signature(self.signed_valid_pa, self.mock_dgca_cert))
+
+    def test_bad_signature_pa(self):
+        # Generate a badly signed PA and verify that it fails signature check
+        with open(self.sample_public_key) as f:
+            pub_key = f.read()
+        my_art = generate_bad_sign_artefact("Rand_DRONENUM", pub_key)
+        from lxml import etree
+        etree.ElementTree(my_art).write(self.bad_artefact_file)
+        self.assertFalse(verify_xml_signature(xml_file=self.bad_artefact_file, certificate_path=self.mock_dgca_cert))
+
+        # fudge some data of the permission artefact. sign verify must fail
+        tree = etree.parse(self.bad_artefact_file)
+        root = tree.getroot()
+        root.attrib['permissionArtifactId'] = "ModifiedPermissionArtefactID"
+        etree.ElementTree(root).write(self.bad_artefact_file)
+        self.assertFalse(verify_xml_signature(xml_file=self.bad_artefact_file, certificate_path=self.mock_dgca_cert))
 
     # Sample method to generate a keypair
     # def test_keygen(self):
     #     create_keys(self.base_path, "sample_key")
 
     def tearDown(self) -> None:
-        if os.path.exists(self.signed_flight_log):
-            os.remove(self.signed_flight_log)
+        files_to_clean = [self.signed_flight_log, self.bad_artefact_file]
+        for file in files_to_clean:
+            if os.path.exists(file):
+                os.remove(file)
