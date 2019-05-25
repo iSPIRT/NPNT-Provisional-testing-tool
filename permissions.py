@@ -18,15 +18,15 @@ def generate_all_test_permission_artefacts(drone_id, drone_pub_key):
     # generate all the test case permission files with expected results for each
     test_cases = []
     perm = generate_bad_geo_artefact(drone_id, drone_pub_key)
-    test_cases.append({'permission': perm, 'expected_result': False})
+    test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_geo'})
     perm = generate_bad_pin_artefact(drone_id, drone_pub_key)
-    test_cases.append({'permission': perm, 'expected_result': False})
+    test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_pin'})
     perm = generate_bad_time_artefact(drone_id, drone_pub_key)
-    test_cases.append({'permission': perm, 'expected_result': False})
+    test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_time'})
     perm = generate_bad_sign_artefact(drone_id, drone_pub_key)
-    test_cases.append({'permission': perm, 'expected_result': False})
+    test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_sign'})
     perm = generate_valid_permission(drone_id, drone_pub_key)
-    test_cases.append({'permission': perm, 'expected_result': True})
+    test_cases.append({'permission': perm, 'expected_result': True, 'test': 'valid_pa'})
     return test_cases
 
 
