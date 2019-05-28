@@ -141,7 +141,7 @@ def verify_flight_log_signature_objs(log_object, public_key_obj):
     :return: bool: True or False on success of verification
     """
     json_data = json.loads(log_object)
-    flight_data_for_verification = bytes(str(json_data['FlightLog']).encode())
+    flight_data_for_verification = json.dumps(json_data['FlightLog']).encode()
     signature = base64.b64decode(json_data['Signature'])
     public_key_obj = RSA.import_key(public_key_obj)
     sig_data = SHA256.new(bytes(flight_data_for_verification))
