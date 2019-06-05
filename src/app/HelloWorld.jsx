@@ -70,6 +70,12 @@ class GenerateTestCases extends React.Component {
                 Drone key in PEM format.
               </Form.Text>
             </Form.Group>
+            <Form.Group controlId="testArea">
+              <Form.Label>Test Area</Form.Label>
+              <Form.Control name="formTestArea" as="textarea" rows="3" placeholder="Test Area" required>
+              [[77.609316, 12.934158], [77.609852, 12.934796],[77.610646, 12.934183], [77.610100, 12.933551], [77.609316,12.934158]]
+              </Form.Control>
+            </Form.Group>
             <Alert show={this.state.showAlert} variant="warning">
               <Alert.Heading>Something went wrong</Alert.Heading>
               <p>

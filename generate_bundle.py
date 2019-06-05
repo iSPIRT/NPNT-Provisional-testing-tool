@@ -9,6 +9,9 @@ from lxml import etree
 import shutil
 from zipfile import ZipFile
 import pickle 
+import json
+
+INCORRECT_COORDS = [[-39.375,19.973348786110602],[-45.3515625,11.178401873711785],[-28.125,8.407168163601076],[-39.375,19.973348786110602]]
 
 class BundleGenerator:
     def __init__(self, args):
@@ -31,8 +34,9 @@ class BundleGenerator:
 
     def main(self):
         drone_public_key = self.args.key.read()
+        coords = json.loads(self.args.area)
         cases = generate_all_test_permission_artefacts(
-            self.args.id, drone_public_key)
+            self.args.id, drone_public_key, coords, INCORRECT_COORDS)
         shuffle(cases)
 
         dirh = tempfile.mkdtemp()
@@ -47,7 +51,7 @@ class BundleGenerator:
             })
 
         breach_perm_xml = generate_valid_permission(
-                self.args.id, drone_public_key)
+                self.args.id, drone_public_key, coords)
         p = os.path.join(dirh, 'permission_artifact_breach.xml')
         etree.ElementTree(breach_perm_xml).write(p)
 
@@ -71,6 +75,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--id', help='Drone ID', required=True)
     parser.add_argument('--key', help='Public key', type=argparse.FileType('r'), required=True)
+    parser.add_argument('--area', help='Test Area', required=True)
     parser.add_argument('--bundle', help='Output testcase bundle', type=argparse.FileType('w'), required=True)
     parser.add_argument('--truth', help='Truth file for the bundle', type=argparse.FileType('wb'), required=True)
     args = parser.parse_args()

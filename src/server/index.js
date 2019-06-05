@@ -82,6 +82,7 @@ app.post('/api/generate', [check('formEmail').isEmail(), check('formDroneID').ex
   let tmpdir = tmp.dirSync();
   let email = req.body.formEmail;
   let droneId = req.body.formDroneID;
+  let area = req.body.formTestArea;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).json({ success: false, msg: "validation errors" });
@@ -92,7 +93,7 @@ app.post('/api/generate', [check('formEmail').isEmail(), check('formDroneID').ex
     return;
   }
   let droneKeyFile = req.files.formDronePublicKey.tempFilePath;
-  exec(`python3 ./generate_bundle.py --id ${droneId} --key ${droneKeyFile} --bundle ${tmpdir.name}/bundle.zip --truth ${tmpdir.name}/truth.bin`, (err, stdout, stderr) => {
+  exec(`python3 ./generate_bundle.py --id ${droneId} --key ${droneKeyFile} --area '${area}' --bundle ${tmpdir.name}/bundle.zip --truth ${tmpdir.name}/truth.bin`, (err, stdout, stderr) => {
     if (err) {
       console.log(err);
       tmpdir.removeCallback();

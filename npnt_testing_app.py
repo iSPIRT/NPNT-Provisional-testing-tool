@@ -11,6 +11,9 @@ from helpers import verify_flight_log_signature_objs
 from permissions import generate_all_test_permission_artefacts, \
     generate_valid_permission
 
+INCORRECT_COORDS = [[-39.375,19.973348786110602],[-45.3515625,11.178401873711785],[-28.125,8.407168163601076],[-39.375,19.973348786110602]]
+COORDS = [[77.609316, 12.934158], [77.609852, 12.934796],[77.610646, 12.934183], [77.610100, 12.933551], [77.609316,12.934158]]  # 
+# use a private key as a fake public key
 
 class AppWindow(QDialog):
     def __init__(self):
@@ -239,7 +242,7 @@ class AppWindow(QDialog):
         if valid_pa:
             index = 5
             current_perm_xml = generate_valid_permission(
-                self.drone_id_entry.text(), self.drone_public_key)
+                self.drone_id_entry.text(), self.drone_public_key, COORDS)
         else:
             current_perm_xml = self.permission_cases[index]
         folder = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
@@ -331,7 +334,7 @@ class AppWindow(QDialog):
     def setup_test_scenarios(self):
         # Setup the test cases. shuffle them to ensure double blind randomness.
         cases = generate_all_test_permission_artefacts(
-            self.drone_id_entry.text(), self.drone_public_key)
+            self.drone_id_entry.text(), self.drone_public_key, COORDS, INCORRECT_COORDS)
         shuffle(cases)
         # reset truth cases to make sure that we dont have a overflowing list
         self.permission_case_truth = []
