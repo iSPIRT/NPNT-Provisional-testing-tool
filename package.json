@@ -9,7 +9,7 @@
   "scripts": {
     "start": "npm-run-all --parallel watch:server start:web",
     "start:web": "webpack-dev-server --progress --inline",
-    "start:server": "node --inspect src/server",
+    "start:server": "node src/server",
     "watch:server": "nodemon --watch src/server src/server",
     "build": "webpack"
   },

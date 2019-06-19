@@ -272,7 +272,6 @@ app.post('/api/verify', [check('formEmail').isEmail(),
 				});
 			});
 		}
-	
 		tmpdir.removeCallback();
 	  });
     } else {
