@@ -6,7 +6,7 @@ const port = process.env.PORT || 5000;
 const Sequelize = require('sequelize');
 const tmp = require('tmp');
 const { check, param, validationResult } = require('express-validator/check');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const uuidv1 = require('uuid/v1');
 const fs = require('fs');
 const ReportTemplate = require('./ReportTemplate');
@@ -93,26 +93,52 @@ app.post('/api/generate', [check('formEmail').isEmail(), check('formDroneID').ex
     return;
   }
   let droneKeyFile = req.files.formDronePublicKey.tempFilePath;
-  exec(`python3 ./generate_bundle.py --id ${droneId} --key ${droneKeyFile} --area '${area}' --bundle ${tmpdir.name}/bundle.zip --truth ${tmpdir.name}/truth.bin`, (err, stdout, stderr) => {
-    if (err) {
-      console.log(err);
-      tmpdir.removeCallback();
-      res.status(500).json({ success: false, msg: "exec error" });
-      return;
-    }
-    Test.create({
-      id: uuidv1(),
-      droneID: droneId,
-      email: email,
-      bundle: fs.readFileSync(`${tmpdir.name}/bundle.zip`),
-      truth: fs.readFileSync(`${tmpdir.name}/truth.bin`),
-      report: null,
-      verified: false
-    })
-    .then(test => {
-      res.json({"success": true, "testId": test.id});
-    });
+  let pythonProcess;
+  try {
+	pythonProcess = spawn('python3', ['./generate_bundle.py',
+	  '--id',
+	  droneId,
+	  '--key',
+	  droneKeyFile,
+	  '--area',
+	  area,
+	  '--bundle',
+	  `${tmpdir.name}/bundle.zip`,
+	  '--truth',
+	  `${tmpdir.name}/truth.bin`
+  	]);
+  } catch (err) {
+	console.log(err);
     tmpdir.removeCallback();
+    res.status(500).json({ success: false, msg: "error" });
+    return;
+  }
+    
+  pythonProcess.stderr.on('data', (data) => {
+	console.log('Python Error', data.toString());	
+  });
+
+  pythonProcess.on('exit', (code) => {
+	if (code != 0) {
+		console.log('Python Error Code', code);
+		res.status(500).json({ success: false, msg: "error" });
+	} else {		
+		console.log('Python Success');
+		Test.create({
+			id: uuidv1(),
+			droneID: droneId,
+			email: email,
+			bundle: fs.readFileSync(`${tmpdir.name}/bundle.zip`),
+			truth: fs.readFileSync(`${tmpdir.name}/truth.bin`),
+			report: null,
+			verified: false
+		})
+		.then(test => {
+			res.json({"success": true, "testId": test.id});
+		});
+	}
+
+	tmpdir.removeCallback();
   });
 });
 
@@ -186,36 +212,68 @@ app.post('/api/verify', [check('formEmail').isEmail(),
       let tmpdir = tmp.dirSync();
       fs.writeFileSync(`${tmpdir.name}/truth.bin`, test.truth);
       let breachLogFile = req.files.s6.tempFilePath;
-      exec(`python3 ./verify_results.py --truth ${tmpdir.name}/truth.bin --s1 ${req.body.s1} --s2 ${req.body.s2} --s3 ${req.body.s3} --s4 ${req.body.s4} --s5 ${req.body.s5} --breach_log ${breachLogFile} --report ${tmpdir.name}/report.json`, (err, stdout, stderr) => {
-        if (err) {
-          console.log(err);
-          tmpdir.removeCallback();
-          res.status(500).json({ success: false, msg: "exec error" });
-          return;
-        }
-        let report = JSON.parse(fs.readFileSync(`${tmpdir.name}/report.json`));
-        let test_result = [];
-        let passed = [];
-        report.forEach(element => {
-          test_result.push(element.test);
-          if(element.passed) {
-            passed.push("PASSED");
-          } else {
-            passed.push("FAILED");
-          }
-        });
-        let template = ReportTemplate({"testId": test.id, "droneId": test.droneID, "email": test.email, "test": test_result, "result": passed });
-        pdf.create(template, {}).toBuffer((err, buf) => {
-          Test.update({ report: buf, "verified": true }, {
-            where: {
-              id: req.body.formTestID
-            }
-          }).then(test => {
-            res.json({"success": true, "testId": test.id});
-          });
-        });
-        tmpdir.removeCallback();
-      });
+	  
+	  let pythonProcess;
+	  try {
+		pythonProcess = spawn('python3', ['./verify_results.py',
+		  '--truth',
+		  `${tmpdir.name}/truth.bin`,
+		  '--s1',
+		  req.body.s1,
+		  '--s2',
+		  req.body.s2,
+		  '--s3',
+		  req.body.s3,
+		  '--s4',
+		  req.body.s4,
+		  '--s5',
+		  req.body.s5,
+		  '--breach_log',
+		  breachLogFile,
+		  '--report',
+		  `${tmpdir.name}/report.json`
+		]);
+	  } catch (err) {
+		console.log(err);
+		tmpdir.removeCallback();
+		res.status(500).json({ success: false, msg: "error" });
+		return;
+	  }
+
+	  pythonProcess.stderr.on('data', (data) => {
+		console.log('Python Error', data.toString());	
+	  });
+	
+	  pythonProcess.on('exit', (code) => {
+		if (code != 0) {
+			console.log('Python Error Code', code);
+			res.status(500).json({ success: false, msg: "error" });
+		} else {		
+			console.log('Python Success');
+			let report = JSON.parse(fs.readFileSync(`${tmpdir.name}/report.json`));
+			let test_result = [];
+			let passed = [];
+			report.forEach(element => {
+				test_result.push(element.test);
+				if (element.passed) {
+					passed.push("PASSED");
+				} else {
+					passed.push("FAILED");
+				}
+			});
+			let template = ReportTemplate({"testId": test.id, "droneId": test.droneID, "email": test.email, "test": test_result, "result": passed });
+			pdf.create(template, {}).toBuffer((err, buf) => {
+				Test.update({ report: buf, "verified": true }, {
+					where: {
+					id: req.body.formTestID
+					}
+				}).then(test => {
+					res.json({"success": true, "testId": test.id});
+				});
+			});
+		}
+		tmpdir.removeCallback();
+	  });
     } else {
       res.status(422).json({ success: false, msg: "test not found"});
       return;
@@ -223,4 +281,4 @@ app.post('/api/verify', [check('formEmail').isEmail(),
   });  
 });
 
-app.listen(port, "127.0.01", () => console.log(`Listening on port ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`Listening on port ${port}`));
