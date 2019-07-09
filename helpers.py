@@ -16,7 +16,7 @@ MOCK_DGCA_CERTIFICATE = os.path.join(os.path.dirname(os.path.realpath(__file__))
 
 
 def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
-                   startTime, endTime, coords, drone_pub_key_obj, secret_pin = b'1234'):
+                   startTime, endTime, coords, drone_pub_key_obj):
     """
     Create  a permission artefact for the required details. The artifact xml
     will be generated and the XML root object is returned. Saving tto a file is
@@ -24,7 +24,6 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
 
     Notes -
     * Recurring Time permission artefacts are not handled as the spec needs to finalize on that
-    * PIN in encrypted without salt. Needs improvement on a standardized method
 
     :param str drone_uin: UIN of the RPAS (Not checked in some cases)
     :param str purpose: Flight purpose text
@@ -34,16 +33,13 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
     :param datetime.datetime endTime: END time for the permission request
     :param List coords: List of coords in Long, Lat
     :param drone_pub_key_obj: The public key file object of the RPAS for PIN
-    :param secret_pin: the secret PIN for the PA. defaults unless specified.
     :return: The permission artefact XML root object. Ready to be signed or stored
     """
-    pinhash = create_pin_hash(drone_pub_key_obj, secret_pin= secret_pin )
     uap = Element('UAPermission',
                   {'lastUpdated': '',
                    'ttl': '',
                    'txnId': '',
-                   'permissionArtifactId': '',
-                   'pilotPinHash': pinhash})
+                   'permissionArtifactId': ''})
     permission = SubElement(uap, 'Permission')
     owner = SubElement(permission, 'Owner', {'operatorId': ''})
     pilot = SubElement(owner, 'Pilot', {'uaplNo': '', 'validTo': ''})
@@ -70,22 +66,6 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
                     'longitude': str(ordinate[0])})
     return ElementTree(uap)
 
-
-def create_pin_hash(pub_key_obj, secret_pin=b'1234'):
-    """
-    Create the hash of Pilot PIN. The PINis encrypted with the public key of the
-    drone. Default uses PIN of 1234 unless explicitly changed
-    :param pub_key_obj: the public key object of the RPAS for PIN encryption
-    :param secret_pin: the top secret pin for NPNT in action
-    :return: the encrypted hash of the PIN
-    """
-    hashpin = SHA256.new(secret_pin).digest()
-    key = RSA.import_key(pub_key_obj)
-
-    cipher = PKCS1_v1_5.new(key)
-    ciphertext = cipher.encrypt(hashpin)
-    ciphertext = base64.b64encode(ciphertext)
-    return str(ciphertext)[2:-1]
 
 
 def sign_permission_artefact(xml_root, private_key=MOCK_DGCA_PRIVATE_KEY, certificate=MOCK_DGCA_CERTIFICATE):

@@ -135,7 +135,6 @@ class VerifyTestCases extends React.Component {
       if(!data.has("s2")) data.set("s2", "0")
       if(!data.has("s3")) data.set("s3", "0")
       if(!data.has("s4")) data.set("s4", "0")
-      if(!data.has("s5")) data.set("s5", "0")
       
       fetch('/api/verify', {
         method: 'POST',
@@ -198,17 +197,11 @@ class VerifyTestCases extends React.Component {
               <Col sm={10}>
               <Form.Check value="1" name="s4" label="Armed with permission_artifact_4.xml" />
               </Col>
-            </Form.Group>
+            </Form.Group>           
             <Form.Group as={Row} controlId="s5">
               <Form.Label column sm={2}>Testcase 5</Form.Label>
               <Col sm={10}>
-              <Form.Check value="1" name="s5" label="Armed with permission_artifact_5.xml" />
-              </Col>
-            </Form.Group>
-            <Form.Group as={Row} controlId="s6">
-              <Form.Label column sm={2}>Testcase 6</Form.Label>
-              <Col sm={10}>
-              <Form.Control name="s6" type="file" placeholder="Log generated with permission_artifact_breach"  required/>
+              <Form.Control name="s5" type="file" placeholder="Log generated with permission_artifact_breach"  required/>
               <Form.Text className="text-muted">
               Log generated with permission_artifact_breach.xml
               </Form.Text>

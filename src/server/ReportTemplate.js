@@ -45,11 +45,6 @@ module.exports = ({ testId, droneId, email, test, result }) => {
 <td>${test[4]}</td>
 <td>${result[4]}</td>
 </tr>
-<tr>
-<td>Testcase 6</td>
-<td>${test[5]}</td>
-<td>${result[5]}</td>
-</tr>
 </tbody>
 </table>
     `;

@@ -34,7 +34,6 @@ class VerifyResults:
             {"test": cases[1]['test'], "passed": False},
             {"test": cases[2]['test'], "passed": False},
             {"test": cases[3]['test'], "passed": False},
-            {"test": cases[4]['test'], "passed": False},
             {"test": "breach", "passed": False}
         ]
 
@@ -54,14 +53,10 @@ class VerifyResults:
         if(cases[3]['expected_result'] ==  self.args.s4):
             results[3]['passed'] = True
 
-        #Case 5
-        if(cases[4]['expected_result'] ==  self.args.s5):
-            results[4]['passed'] = True
-
         #breach
         breach_log = self.args.breach_log.read()
         breach_passed = verify_flight_log_signature_objs(breach_log, drone_public_key)
-        results[5]['passed'] = breach_passed
+        results[4]['passed'] = breach_passed
 
         #report
         self.args.report.write(json.dumps(results))
@@ -75,7 +70,6 @@ if __name__ == '__main__':
     parser.add_argument('--s2', help='Permission artifact 2 arm status', type=int, required=True)
     parser.add_argument('--s3', help='Permission artifact 3 arm status', type=int, required=True)
     parser.add_argument('--s4', help='Permission artifact 4 arm status', type=int, required=True)
-    parser.add_argument('--s5', help='Permission artifact 5 arm status', type=int, required=True)
     parser.add_argument('--breach_log', help='Breach log file', type=argparse.FileType('r'), required=True)
     parser.add_argument('--report', help='Report file', type=argparse.FileType('w'), required=True)
     args = parser.parse_args()
