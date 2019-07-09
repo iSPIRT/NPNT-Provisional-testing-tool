@@ -22,8 +22,6 @@ def generate_all_test_permission_artefacts(drone_id, drone_pub_key, coords, bad_
     test_cases = []
     perm = generate_bad_geo_artefact(drone_id, drone_pub_key, bad_coords)
     test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_geo'})
-    perm = generate_bad_pin_artefact(drone_id, drone_pub_key, coords)
-    test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_pin'})
     perm = generate_bad_time_artefact(drone_id, drone_pub_key, coords)
     test_cases.append({'permission': perm, 'expected_result': False, 'test': 'bad_time'})
     perm = generate_bad_sign_artefact(drone_id, drone_pub_key, coords)
@@ -77,17 +75,5 @@ def generate_bad_time_artefact(drone_id, drone_pub_key, coords, ):
     permission = createArtifact(drone_id, FLIGHT_PURPOSE, PAYLOAD_WEIGHT,
                                 PAYLOAD_DETAILS, START_TIME, START_TIME, coords,
                                 drone_pub_key)
-    signed_permission = sign_permission_artefact(permission)
-    return signed_permission
-
-
-def generate_bad_pin_artefact(drone_id, drone_pub_key, coords):
-    # Incorrect PIN is a invalid 6 digit PIN
-    # coords = [[77.609316, 12.934158], [77.609852, 12.934796],
-    #           [77.610646, 12.934183], [77.610100, 12.933551], [77.609316,
-    #                                                            12.934158]]  # placeholder , replace the coordinates with the correct one
-    permission = createArtifact(drone_id, FLIGHT_PURPOSE, PAYLOAD_WEIGHT,
-                                PAYLOAD_DETAILS, START_TIME, END_TIME, coords,
-                                drone_pub_key, secret_pin=b'654321')
     signed_permission = sign_permission_artefact(permission)
     return signed_permission

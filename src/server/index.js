@@ -187,14 +187,13 @@ app.post('/api/verify', [check('formEmail').isEmail(),
   check('s1').exists({"checkNull": true, "checkFalsy": true}),
   check('s2').exists({"checkNull": true, "checkFalsy": true}),
   check('s3').exists({"checkNull": true, "checkFalsy": true}),
-  check('s4').exists({"checkNull": true, "checkFalsy": true}),
-  check('s5').exists({"checkNull": true, "checkFalsy": true})], (req, res) => {
+  check('s4').exists({"checkNull": true, "checkFalsy": true})], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).json({ success: false, "msg": "validation errors" });
     return;
   }
-  if(!req.files.s6) {
+  if(!req.files.s5) {
     res.status(422).json({ success: false, "msg": "please select breach log" });
     return;
   }
@@ -211,7 +210,7 @@ app.post('/api/verify', [check('formEmail').isEmail(),
       }
       let tmpdir = tmp.dirSync();
       fs.writeFileSync(`${tmpdir.name}/truth.bin`, test.truth);
-      let breachLogFile = req.files.s6.tempFilePath;
+      let breachLogFile = req.files.s5.tempFilePath;
 	  
 	  let pythonProcess;
 	  try {
@@ -226,8 +225,6 @@ app.post('/api/verify', [check('formEmail').isEmail(),
 		  req.body.s3,
 		  '--s4',
 		  req.body.s4,
-		  '--s5',
-		  req.body.s5,
 		  '--breach_log',
 		  breachLogFile,
 		  '--report',
