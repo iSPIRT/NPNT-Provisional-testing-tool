@@ -1,4 +1,6 @@
 # Digital Sky Provisional Testing App
+[![Python: 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/)
+
 
 A simple and easy tool to perform a basic check of NPNT/ Digital Sky compliance. 
 The App is a checklist to verify basic NPNT work and is limited to NPNT verification, PA, PIN check and Flight log signature Verification. 
@@ -26,7 +28,7 @@ The Flight log is generated on breaching the geofence set by a valid permission 
 The Digital signature of the Flight log is then verified against the public key of the drone.
 
 ## For Developers
-The app is written in python 3. To run the app, download the repo or clone the repository using
+The app is written in python 3.6. To run the app, download the repo or clone the repository using
 
 `git clone https://github.com/iSPIRT/NPNT-Provisional-testing-tool.git`
 
