@@ -246,12 +246,13 @@ class AppWindow(QDialog):
         else:
             current_perm_xml = self.permission_cases[index]
         folder = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        save_path = os.path.join(folder,
+        if not folder == '':
+            save_path = os.path.join(folder,
                                  'signed_permission_artefact_{}.xml'.format(
                                      index + 1))
-
-        from lxml import etree
-        etree.ElementTree(current_perm_xml).write(save_path)
+            from lxml import etree
+            etree.ElementTree(current_perm_xml).write(save_path)
+            print(etree.tostring(current_perm_xml, pretty_print=True).decode('utf-8'))
 
     def update_responses(self, btn, index):
         if btn.text() == "Yes":
@@ -384,7 +385,8 @@ class AppWindow(QDialog):
     def upload_log_browser(self):
         self.log_file, _filter = QFileDialog.getOpenFileName(self,
                                                              "Select test flight log")
-        self.upload_drone_key_btn.setText('Flight log uploaded')
+        if not self.log_file == '':
+            self.upload_drone_key_btn.setText('Flight log uploaded')
 
     def reset_window(self):
         """

@@ -30,7 +30,9 @@ class TestFlightLog(unittest.TestCase):
         # Generate a badly signed PA and verify that it fails signature check
         with open(self.sample_public_key) as f:
             pub_key = f.read()
-        my_art = generate_bad_sign_artefact("Rand_DRONENUM", pub_key)
+        COORDS = [[77.609316, 12.934158], [77.609852, 12.934796], [77.610646, 12.934183], [77.610100, 12.933551],
+                  [77.609316, 12.934158]] 
+        my_art = generate_bad_sign_artefact("Rand_DRONENUM", pub_key,COORDS)
         from lxml import etree
         etree.ElementTree(my_art).write(self.bad_artefact_file)
         self.assertFalse(verify_xml_signature(xml_file=self.bad_artefact_file, certificate_path=self.mock_dgca_cert))
