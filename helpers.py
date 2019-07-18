@@ -120,7 +120,8 @@ def verify_flight_log_signature_objs(log_object, public_key_obj):
     :param public_key_obj: The public key object to be verified against
     :return: bool: True or False on success of verification
     """
-    json_data = json.loads(log_object)
+    from collections import OrderedDict
+    json_data = json.loads(log_object, object_pairs_hook=OrderedDict)
     flight_data_for_verification = json.dumps(json_data['FlightLog']).encode()
     signature = base64.b64decode(json_data['Signature'])
     public_key_obj = RSA.import_key(public_key_obj)
