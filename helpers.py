@@ -35,11 +35,15 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
     :param drone_pub_key_obj: The public key file object of the RPAS for PIN
     :return: The permission artefact XML root object. Ready to be signed or stored
     """
+    from random import randint
+    from datetime import datetime
+    timestr = str(datetime.now().strftime('%Y%m%d%H%M%S'))
+    pa_id = timestr + str(randint(1,101))
     uap = Element('UAPermission',
-                  {'lastUpdated': '',
+                  {'lastUpdated': timestr,
                    'ttl': '',
                    'txnId': '',
-                   'permissionArtifactId': ''})
+                   'permissionArtifactId': pa_id})
     permission = SubElement(uap, 'Permission')
     owner = SubElement(permission, 'Owner', {'operatorId': ''})
     pilot = SubElement(owner, 'Pilot', {'uaplNo': '', 'validTo': ''})
