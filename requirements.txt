@@ -3,3 +3,4 @@ PyQt5==5.11.3
 lxml==4.2.1
 signxml==2.6.0
 cryptography==2.2.2
+pytz==2019.3
