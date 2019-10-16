@@ -1,15 +1,16 @@
 import base64
-import json
+import decimal
 import os
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 
 import cryptography
 import signxml as sx
-from Cryptodome.Cipher import PKCS1_v1_5
+import simplejson as json
 from Cryptodome.Hash import SHA256
 from Cryptodome.PublicKey import RSA
 from Cryptodome.Signature import pkcs1_15
 from lxml import etree
+
 MOCK_DGCA_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca_private.pem")
 MOCK_DGCA_CERTIFICATE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca.cert")
 
@@ -120,7 +121,7 @@ def verify_flight_log_signature_objs(log_object, public_key_obj):
     :param public_key_obj: The public key object to be verified against
     :return: bool: True or False on success of verification
     """
-    json_data = json.loads(log_object)
+    json_data = json.loads(log_object, parse_float=decimal.Decimal)
     flight_data_for_verification = json.dumps(json_data['FlightLog']).encode()
     signature = base64.b64decode(json_data['Signature'])
     public_key_obj = RSA.import_key(public_key_obj)
@@ -156,8 +157,9 @@ def sign_log(log_path, private_key_path, out_path=None):
     :return: None
     """
     with open(log_path, "rb") as log_obj, open(private_key_path) as key_ob:
-        jd = json.loads(log_obj.read())
+        jd = json.loads(log_obj.read(), parse_float=decimal.Decimal)
         rsa_key = RSA.import_key(key_ob.read())
+        # print("__signdata to sha256 = __" + json.dumps((jd['FlightLog'])) + "__")
         hashed_logdata = SHA256.new(json.dumps((jd['FlightLog'])).encode())
         log_signature = pkcs1_15.new(rsa_key).sign(hashed_logdata)
         # the signature is encoded in base64 for transport
