@@ -1,10 +1,10 @@
 import unittest
-import os
+
 from helpers import *
+from permissions import generate_bad_sign_artefact, generate_tampered_artefact
 
-from permissions import generate_bad_sign_artefact
 
-
+#todo see if this requires renaming
 class TestFlightLog(unittest.TestCase):
 
     @classmethod
@@ -28,19 +28,19 @@ class TestFlightLog(unittest.TestCase):
 
     def test_bad_signature_pa(self):
         # Generate a badly signed PA and verify that it fails signature check
+        coords = [[77.609316, 12.934158], [77.609852, 12.934796],[77.610646, 12.934183], [77.610100, 12.933551], [77.609316,12.934158]]
+
         with open(self.sample_public_key) as f:
             pub_key = f.read()
-        my_art = generate_bad_sign_artefact("Rand_DRONENUM", pub_key)
+        my_art = generate_bad_sign_artefact("Rand_DRONENUM", pub_key,coords)
         from lxml import etree
         etree.ElementTree(my_art).write(self.bad_artefact_file)
         self.assertFalse(verify_xml_signature(xml_file=self.bad_artefact_file, certificate_path=self.mock_dgca_cert))
 
-        # fudge some data of the permission artefact. sign verify must fail
-        tree = etree.parse(self.bad_artefact_file)
-        root = tree.getroot()
-        root.attrib['permissionArtifactId'] = "ModifiedPermissionArtefactID"
-        etree.ElementTree(root).write(self.bad_artefact_file)
-        self.assertFalse(verify_xml_signature(xml_file=self.bad_artefact_file, certificate_path=self.mock_dgca_cert))
+        # Verify that a tampered artefact also fails checks
+        malart = generate_tampered_artefact("Rand_UIN", pub_key, coords)
+        etree.ElementTree(malart).write(self.bad_artefact_file)
+        self.assertFalse(verify_xml_signature(self.bad_artefact_file, self.mock_dgca_cert))
 
     # Sample method to generate a keypair
     # def test_keygen(self):

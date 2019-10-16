@@ -77,3 +77,17 @@ def generate_bad_time_artefact(drone_id, drone_pub_key, coords, ):
                                 drone_pub_key)
     signed_permission = sign_permission_artefact(permission)
     return signed_permission
+
+def generate_tampered_artefact(drone_id, drone_pub_key, coords, ):
+    # Tampered permission artefact is different from the bad signature permission artefact. This has the contents
+    # changed after signing, whereas the other has the PA signed by a illegitimate entity.
+
+    permission = createArtifact(drone_id, FLIGHT_PURPOSE, PAYLOAD_WEIGHT,
+                                PAYLOAD_DETAILS, START_TIME, END_TIME, coords,
+                                drone_pub_key)
+    signed_permission = sign_permission_artefact(permission)
+    from lxml import etree
+    pa_obj = etree.ElementTree(signed_permission)
+    root_obj = pa_obj.getroot()
+    root_obj.attrib['permissionArtifactId'] = "ModifiedPermissionArtefactID"
+    return root_obj
