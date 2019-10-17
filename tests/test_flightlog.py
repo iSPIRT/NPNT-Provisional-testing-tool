@@ -42,6 +42,11 @@ class TestFlightLog(unittest.TestCase):
         etree.ElementTree(malart).write(self.bad_artefact_file)
         self.assertFalse(verify_xml_signature(self.bad_artefact_file, self.mock_dgca_cert))
 
+    def test_log_schema_verification(self):
+        with open("Flightlog-new-schema.json") as f:
+            log_file = f.read()
+        self.assertTrue(check_log_schema(logfile=log_file))
+
     # Sample method to generate a keypair
     # def test_keygen(self):
     #     create_keys(self.base_path, "sample_key")

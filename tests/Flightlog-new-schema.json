@@ -1,0 +1,41 @@
+{
+  "signature": "base64 encoded signature of the flightlog element",
+  "FlightLog": {
+    "PermissionArtefact": "ermission artefact ID of the current flightlog",
+    "previous_log_hash": "hash of the most recent flight log",
+    "LogEntries": [
+      {
+        "Entry_type": "TAKEOFF/ARM",
+        "TimeStamp": 41,
+        "Longitude": 380.000000,
+        "Latitude": 443.5000000,
+        "Altitude": 704.3400,
+        "CRC": 719
+      },
+      {
+        "Entry_type": "GEOFENCE_BREACH",
+        "TimeStamp": 505,
+        "Longitude": 11,
+        "Latitude": 701,
+        "Altitude": 7,
+        "CRC": 637
+      },
+      {
+        "Entry_type": "TIME_BREACH",
+        "TimeStamp": 81,
+        "Longitude": 116.5,
+        "Latitude": 996,
+        "Altitude": 560,
+        "CRC": 147
+      },
+      {
+        "Entry_type": "LAND/DISARM",
+        "TimeStamp": 81,
+        "Longitude": 116.5,
+        "Latitude": 996,
+        "Altitude": 560,
+        "CRC": 147
+      }
+    ]
+  }
+}
