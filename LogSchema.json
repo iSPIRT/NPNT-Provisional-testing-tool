@@ -1,0 +1,119 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "Flight Log schema for Digital Sky",
+  "description": "This is the flight log schema for digital sky flight logs. One file that follows this schema should be generated for every permission artefact",
+  "required": [
+    "signature",
+    "FlightLog"
+  ],
+  "properties": {
+    "signature": {
+      "$id": "#/properties/signature",
+      "type": "string",
+      "title": "The Signature Schema",
+      "description": "Base64 encoded RSA2048 with SHA256 Signature of the FlightLog element. "
+    },
+    "FlightLog": {
+      "$id": "#/properties/FlightLog",
+      "type": "object",
+      "title": "The Flightlog Schema",
+      "description": "Contains all the flight log related information. ",
+      "required": [
+        "PermissionArtefact",
+        "previous_log_hash",
+        "LogEntries"
+      ],
+      "properties": {
+        "PermissionArtefact": {
+          "$id": "#/properties/FlightLog/properties/PermissionArtefact",
+          "type": "string",
+          "title": "Permission Artefact ID",
+          "description": "The ID of the current permission artefact against which the log is being generated. "
+        },
+        "previous_log_hash": {
+          "$id": "#/properties/FlightLog/properties/previous_log_hash",
+          "type": "string",
+          "title": "The Previous Log hash",
+          "description": "This contains the base64 encoded hash of the most recent flight log that was generated",
+          "default": ""
+        },
+        "LogEntries": {
+          "$id": "#/properties/FlightLog/properties/LogEntries",
+          "type": "array",
+          "title": "The Logentries Schema",
+          "items": {
+            "$id": "#/properties/FlightLog/properties/LogEntries/items",
+            "type": "object",
+            "title": "Flight Log items",
+            "required": [
+              "Entry_type",
+              "TimeStamp",
+              "Longitude",
+              "Latitude",
+              "Altitude"
+            ],
+            "properties": {
+              "Entry_type": {
+                "$id": "#/properties/FlightLog/properties/LogEntries/items/properties/Entry_type",
+                "type": "string",
+                "enum": [
+                  "GEOFENCE_BREACH",
+                  "TAKEOFF/ARM",
+                  "TIME_BREACH",
+                  "LAND/DISARM"
+                ],
+                "title": "Flight Log entries",
+                "description": "Every entry in the flight log should be one of the four types"
+              },
+              "TimeStamp": {
+                "$id": "#/properties/FlightLog/properties/LogEntries/items/properties/TimeStamp",
+                "type": "integer",
+                "title": "Unix timestamp of the recorded entry",
+                "default": 0
+              },
+              "Longitude": {
+                "$id": "#/properties/FlightLog/properties/LogEntries/items/properties/Longitude",
+                "type": "number",
+                "title": "The Longitude in decimal Degrees",
+                "default": 0,
+                "examples": [
+                  12.34567
+                ]
+              },
+              "Latitude": {
+                "$id": "#/properties/FlightLog/properties/LogEntries/items/properties/Latitude",
+                "type": "number",
+                "title": "The Latitude in decimal degrees",
+                "default": 0.0,
+                "examples": [
+                  12.34567
+                ]
+              },
+              "Altitude": {
+                "$id": "#/properties/FlightLog/properties/LogEntries/items/properties/Altitude",
+                "type": "number",
+                "title": "The ellipsoidal height in m",
+                "default": 0,
+                "examples": [
+                  100.1
+                ]
+              },
+              "CRC": {
+                "$id": "#/properties/FlightLog/properties/LogEntries/items/properties/CRC",
+                "type": "integer",
+                "title": "The Crc Schema (Optional)",
+                "default": 0,
+                "examples": [
+                  719
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

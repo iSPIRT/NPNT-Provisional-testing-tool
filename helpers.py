@@ -13,7 +13,7 @@ from lxml import etree
 
 MOCK_DGCA_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca_private.pem")
 MOCK_DGCA_CERTIFICATE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca.cert")
-
+LOG_SCHEMA = os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "LogSchema.json"))
 
 
 def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
@@ -190,3 +190,15 @@ def create_keys(folder, keyname):
     public_key = key.publickey().export_key()
     with open(os.path.join(folder, keyname + "_public.pem"), "wb") as file_out:
         file_out.write(public_key)
+
+
+def check_log_schema(logfile, schemafile=LOG_SCHEMA):
+    from jsonschema import validate, ValidationError
+    flightlog = json.loads(logfile)
+    with open(schemafile) as f:
+        logschema = json.loads(f.read())
+    try:
+        validate(instance=flightlog, schema=logschema)
+        return True
+    except ValidationError:
+        return False
