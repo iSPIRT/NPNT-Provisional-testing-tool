@@ -8,6 +8,8 @@ database.sqlite
 *.tlog.raw
 __pychache__
 
+venv
+.vscode
 
 ### PyCharm stuff###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
