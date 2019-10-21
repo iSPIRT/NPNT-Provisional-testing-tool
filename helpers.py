@@ -2,6 +2,7 @@ import base64
 import decimal
 import os
 from xml.etree.ElementTree import Element, SubElement, ElementTree
+import uuid
 
 import cryptography
 import signxml as sx
@@ -39,8 +40,8 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
     uap = Element('UAPermission',
                   {'lastUpdated': '',
                    'ttl': '',
-                   'txnId': '',
-                   'permissionArtifactId': ''})
+                   'txnId': str(uuid.uuid4()),
+                   'permissionArtifactId': str(uuid.uuid1())})
     permission = SubElement(uap, 'Permission')
     owner = SubElement(permission, 'Owner', {'operatorId': ''})
     pilot = SubElement(owner, 'Pilot', {'uaplNo': '', 'validTo': ''})
@@ -66,7 +67,6 @@ def createArtifact(drone_uin, purpose, payloadWeight, payloadDetails,
                    {'latitude': str(ordinate[1]),
                     'longitude': str(ordinate[0])})
     return ElementTree(uap)
-
 
 
 def sign_permission_artefact(xml_root, private_key=MOCK_DGCA_PRIVATE_KEY, certificate=MOCK_DGCA_CERTIFICATE):
