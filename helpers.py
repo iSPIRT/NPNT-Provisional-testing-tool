@@ -122,7 +122,7 @@ def verify_flight_log_signature_objs(log_object, public_key_obj):
     :return: bool: True or False on success of verification
     """
     json_data = json.loads(log_object, parse_float=decimal.Decimal)
-    flight_data_for_verification = json.dumps(json_data['FlightLog']).encode()
+    flight_data_for_verification = json.dumps(json_data['FlightLog'], separators=(',',':')).encode()
     signature = base64.b64decode(json_data['Signature'])
     public_key_obj = RSA.import_key(public_key_obj)
     sig_data = SHA256.new(bytes(flight_data_for_verification))
@@ -160,7 +160,7 @@ def sign_log(log_path, private_key_path, out_path=None):
         jd = json.loads(log_obj.read(), parse_float=decimal.Decimal)
         rsa_key = RSA.import_key(key_ob.read())
         # print("__signdata to sha256 = __" + json.dumps((jd['FlightLog'])) + "__")
-        hashed_logdata = SHA256.new(json.dumps((jd['FlightLog'])).encode())
+        hashed_logdata = SHA256.new(json.dumps((jd['FlightLog']), separators=(',',':')).encode())
         log_signature = pkcs1_15.new(rsa_key).sign(hashed_logdata)
         # the signature is encoded in base64 for transport
         enc = base64.b64encode(log_signature)

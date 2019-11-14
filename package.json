@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "npm-run-all --parallel watch:server start:web",
-    "start:web": "webpack-dev-server --progress --inline",
+    "start:web": "webpack-dev-server --progress --inline --host 0.0.0.0",
     "start:server": "node src/server",
     "watch:server": "nodemon --watch src/server src/server",
     "build": "webpack"
