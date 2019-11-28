@@ -6,16 +6,9 @@
   "title": "Flight Log schema for Digital Sky",
   "description": "This is the flight log schema for digital sky flight logs. One file that follows this schema should be generated for every permission artefact",
   "required": [
-    "signature",
     "FlightLog"
   ],
   "properties": {
-    "signature": {
-      "$id": "#/properties/signature",
-      "type": "string",
-      "title": "The Signature Schema",
-      "description": "Base64 encoded RSA2048 with SHA256 Signature of the FlightLog element. "
-    },
     "FlightLog": {
       "$id": "#/properties/FlightLog",
       "type": "object",
