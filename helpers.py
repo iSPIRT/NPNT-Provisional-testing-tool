@@ -12,6 +12,9 @@ from Cryptodome.PublicKey import RSA
 from Cryptodome.Signature import pkcs1_15
 from lxml import etree
 
+from authlib import jose
+import jsonschema
+
 MOCK_DGCA_PRIVATE_KEY = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca_private.pem")
 MOCK_DGCA_CERTIFICATE = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Resources", "dgca.cert")
 LOG_SCHEMA = os.path.join(os.path.join(os.path.dirname(os.path.realpath(__file__)), "LogSchema.json"))
@@ -116,24 +119,26 @@ def verify_xml_signature(xml_file, certificate_path):
 
 def verify_flight_log_signature_objs(log_object, public_key_obj):
     """
-    Verify the signature of the Flight log_object against a public key.
+    Verify the signature of the Flight log_object against a public key
+    and validates it against the schema.
     :param log_object: The flight log file object for verification
     :param public_key_obj: The public key object to be verified against
     :return: bool: True or False on success of verification
     """
-    json_data = json.loads(log_object, parse_float=decimal.Decimal)
-    flight_data_for_verification = json.dumps(json_data['FlightLog'], separators=(',',':')).encode()
-    signature = base64.b64decode(json_data['Signature'])
-    public_key_obj = RSA.import_key(public_key_obj)
-    sig_data = SHA256.new(bytes(flight_data_for_verification))
+    jws = jose.JsonWebSignature(algorithms=['RS256'])
     try:
-        pkcs1_15.new(public_key_obj).verify(sig_data, signature)
-        # The file signature is authentic
-        return True
-    except ValueError:
-        # The file signature is not authentic.
+        jws_obj = jws.deserialize_json(log_object, public_key_obj)
+    except jose.errors.BadSignatureError:
         return False
-
+    flight_data = json.loads(jws_obj['payload'])
+    schema_obj = open(LOG_SCHEMA, "rb").read()
+    schema = json.loads(schema_obj)
+    try:
+        jsonschema.validate(instance=flight_data,schema=schema)
+        return True
+    except jsonschema.ValidationError:
+        return False
+    return True
 
 def verify_flight_log_signature(flight_log, public_key):
     """

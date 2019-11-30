@@ -294,7 +294,7 @@ class AppWindow(QDialog):
                                                                              self.drone_public_key)
         except Exception as e:
             self.show_warning(
-                "Incorrect file format. Signature verification failed/n"
+                "Incorrect file format. Signature verification failed\n"
                 "Check input file format and specification", str(e))
             return
         self.correct_responses = self.permission_case_truth == self.responses
