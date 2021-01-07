@@ -1,6 +1,6 @@
 pycryptodomex==3.7.2
 PyQt5==5.11.3
-lxml==4.2.1
+lxml==4.6.2
 signxml==2.6.0
 cryptography==2.2.2
 pytz==2019.3
