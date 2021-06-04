@@ -1,4 +1,9 @@
-# Digital Sky Provisional Testing App
+# Note - Read before Use
+This tool is deprecated and no longer in use. The current official NPNT test tool is sadly closed source and hosted at [https://www.npnt-tool.qcin.org](https://www.npnt-tool.qcin.org)
+
+**Hence, this project is no longer active or being maintained.**
+
+# Digital Sky Provisional Testing App [Deprecated]
 [![Python: 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/)
 
 
